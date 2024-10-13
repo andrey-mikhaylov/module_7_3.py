@@ -1,3 +1,6 @@
+import os
+
+
 class WordsFinder:
     def __init__(self, *file_names: str):
         """
@@ -22,7 +25,6 @@ class WordsFinder:
         :return: словарь следующего вида:
                  {'file1.txt': ['word1', 'word2'], 'file2.txt': ['word3', 'word4'], 'file3.txt': ['word5', 'word6', 'word7']}
         """
-
         # Создайте пустой словарь all_words.
         all_words = {}
 
@@ -59,10 +61,13 @@ class WordsFinder:
         :param word: искомое слово
         :return: словарь, где ключ - название файла, значение - количество слова word в списке слов этого файла.
         """
-        for name, words in self.get_all_words().items():
+        result = {}
+        for file_name, words in self.get_all_words().items():
             # Логика методов find или count
-            pass
-        pass
+            position = words.index(word.lower())
+            result[file_name] = len(words[position])
+
+        return result
 
 
 def test1():
@@ -78,17 +83,30 @@ def test1():
     """
 
 
-def test(folder: str):
-    pass
+def test(test_folder: str, *test_files: str):
+    maindir = os.getcwd()
+    print(maindir)
+
+    if (test_folder):
+        os.chdir(test_folder)
+    print(os.getcwd())
+
+    finder = WordsFinder(test_files)
+    print(finder.get_all_words())  # Все слова
+    print(finder.find('TEXT'))  # 3 слово по счёту
+    print(finder.count('teXT'))  # 4 слова teXT в тексте всего
+
+    os.chdir(maindir)
+    print(os.getcwd())
 
 
 if __name__ == '__main__':
     test1()
-    test('')
-    test('Mother Goose - Monday’s Child')
-    test('Rudyard Kipling - If')
-    test('Walt Whitman - O Captain! My Captain!')
-    test('All')
+    # test('')
+    # test('Mother Goose - Monday’s Child')
+    # test('Rudyard Kipling - If')
+    # test('Walt Whitman - O Captain! My Captain!')
+    # test('All')
 
 
 """
