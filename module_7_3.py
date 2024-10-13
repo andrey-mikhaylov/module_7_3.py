@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 class WordsFinder:
@@ -16,7 +17,7 @@ class WordsFinder:
 
     def __remove_symbols(self, text: str, symbols: list[str]) -> str:
         for symbol in symbols:
-            text.replace(symbol, ' ')
+            text = text.replace(symbol, ' ')
         return text
 
     def get_all_words(self):
@@ -83,7 +84,7 @@ def test1():
     """
 
 
-def test(test_folder: str, *test_files: str):
+def test(test_folder: str, result_file, *test_files: str):
     maindir = os.getcwd()
     print(maindir)
 
@@ -91,10 +92,34 @@ def test(test_folder: str, *test_files: str):
         os.chdir(test_folder)
     print(os.getcwd())
 
-    finder = WordsFinder(test_files)
+    class ListStream:
+        def __init__(self):
+            self.data = []
+
+        def write(self, s):
+            self.data.append(s)
+
+    sys.stdout = x = ListStream()
+
+    # include
+
+    finder = WordsFinder(*test_files)
     print(finder.get_all_words())  # Все слова
     print(finder.find('TEXT'))  # 3 слово по счёту
     print(finder.count('teXT'))  # 4 слова teXT в тексте всего
+
+    sys.stdout = sys.__stdout__
+
+    with open(result_file, 'r', encoding='utf8') as f:
+        correct_result = f.read()
+
+    with open('check_file.txt', 'w', encoding='utf8') as f:
+        f.write('\n'.join(x.data))
+
+    if x.data == correct_result:
+        print("pass")
+    else:
+        print("fail\n", x.data[0], '\n', correct_result)
 
     os.chdir(maindir)
     print(os.getcwd())
@@ -102,7 +127,7 @@ def test(test_folder: str, *test_files: str):
 
 if __name__ == '__main__':
     test1()
-    # test('')
+    test('', 'result.txt', 'test_file.txt')
     # test('Mother Goose - Monday’s Child')
     # test('Rudyard Kipling - If')
     # test('Walt Whitman - O Captain! My Captain!')
