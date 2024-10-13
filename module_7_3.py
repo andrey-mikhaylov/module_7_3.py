@@ -86,18 +86,16 @@ def test1():
 
 def test(test_folder: str, result_file, *test_files: str):
     maindir = os.getcwd()
-    print(maindir)
 
     if (test_folder):
         os.chdir(test_folder)
-    print(os.getcwd())
 
     class ListStream:
         def __init__(self):
-            self.data = []
+            self.data = ''
 
         def write(self, s):
-            self.data.append(s)
+            self.data += s
 
     sys.stdout = x = ListStream()
 
@@ -109,20 +107,21 @@ def test(test_folder: str, result_file, *test_files: str):
     print(finder.count('teXT'))  # 4 слова teXT в тексте всего
 
     sys.stdout = sys.__stdout__
+    result = x.data
 
     with open(result_file, 'r', encoding='utf8') as f:
         correct_result = f.read()
 
     with open('check_file.txt', 'w', encoding='utf8') as f:
-        f.write('\n'.join(x.data))
+        f.write(result)
 
-    if x.data == correct_result:
-        print("pass")
+    if result == correct_result:
+        print(result)
     else:
-        print("fail\n", x.data[0], '\n', correct_result)
+        print("fail\n", x.data, '\n', correct_result)
+        raise
 
     os.chdir(maindir)
-    print(os.getcwd())
 
 
 if __name__ == '__main__':
