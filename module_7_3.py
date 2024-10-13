@@ -21,22 +21,6 @@ class WordsFinder:
             text = text.replace(symbol, new)
         return text
 
-    def __split(self, text: str) -> list[str]:
-        result = []
-        word = ''
-        for c in text:
-            if c in (' ', '\n'):
-                if word != '':
-                    result.append(word)
-                if word == '‘hold':
-                    pass
-                word = ''
-            else:
-                word += c
-        if word != '':
-            result.append(word)
-        return result
-
     def get_all_words(self):
         """
         подготовительный метод, который возвращает словарь названий файлов и слов, содержащиеся в этих файлах
@@ -54,7 +38,7 @@ class WordsFinder:
             text1 = self.__remove_symbols(text, ['!', ' - '], '')
             text2 = self.__remove_symbols(text1, [',', '.', '=', '?', ';', ':'], ' ')     #'—',  '‘', '’' ???
             # Разбейте эту строку на элементы списка методом split(). (разбивается по умолчанию по пробелу)
-            words = self.__split(text2)
+            words = text2.split()
             # В словарь all_words запишите полученные данные, ключ - название файла, значение - список из слов этого файла.
             all_words[file_name] = words
 
