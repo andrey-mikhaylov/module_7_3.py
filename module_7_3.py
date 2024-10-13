@@ -29,10 +29,11 @@ class WordsFinder:
         # Переберите названия файлов и открывайте каждый из них, используя оператор with.
         for file_name in self.file_names:
             # Для каждого файла считывайте единые строки, переводя их в нижний регистр (метод lower()).
-            text = self.__read_file(file_name)
+            text = self.__read_file(file_name).lower()
             # Избавьтесь от пунктуации [',', '.', '=', '!', '?', ';', ':', ' - '] в строке. (тире обособлено пробелами, это не дефис в слове).
+            text_no_symbols = self.__remove_symbols(text, [',', '.', '=', '!', '?', ';', ':', ' - '])
             # Разбейте эту строку на элементы списка методом split(). (разбивается по умолчанию по пробелу)
-            words = self.__remove_symbols(text, (',', '.', '=', '!', '?', ';', ':', ' - ')).split()
+            words = text_no_symbols.split()
             # В словарь all_words запишите полученные данные, ключ - название файла, значение - список из слов этого файла.
             all_words[file_name] = words
 
@@ -45,10 +46,13 @@ class WordsFinder:
         """
         # В методах find и count пользуйтесь ранее написанным методом get_all_words для получения названия файла и списка его слов.
         # Для удобного перебора одновременно ключа(названия) и значения(списка слов) можно воспользоваться методом словаря - item().
-        for name, words in self.get_all_words().items():
+        result = {}
+        for file_name, words in self.get_all_words().items():
             # Логика методов find или count
-            pass
-        pass
+            position = words.index(word.lower()) + 1
+            result[file_name] = position
+
+        return result
 
     def count(self, word: str) -> dict[str, int]:
         """
@@ -62,7 +66,7 @@ class WordsFinder:
 
 
 def test1():
-    finder2 = WordsFinder('tests/test_file.txt')
+    finder2 = WordsFinder('test_file.txt')
     print(finder2.get_all_words())  # Все слова
     print(finder2.find('TEXT'))  # 3 слово по счёту
     print(finder2.count('teXT'))  # 4 слова teXT в тексте всего
@@ -80,10 +84,10 @@ def test(folder: str):
 
 if __name__ == '__main__':
     test1()
-    test('tests')
-    test('tests/Mother Goose - Monday’s Child')
-    test('tests/Rudyard Kipling - If')
-    test('tests/Walt Whitman - O Captain! My Captain!')
+    test('')
+    test('Mother Goose - Monday’s Child')
+    test('Rudyard Kipling - If')
+    test('Walt Whitman - O Captain! My Captain!')
     test('All')
 
 
