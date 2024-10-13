@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 
 
 class WordsFinder:
@@ -15,10 +16,26 @@ class WordsFinder:
             text = f.read()
         return text
 
-    def __remove_symbols(self, text: str, symbols: list[str]) -> str:
+    def __remove_symbols(self, text: str, symbols: list[str], new: str) -> str:
         for symbol in symbols:
-            text = text.replace(symbol, ' ')
+            text = text.replace(symbol, new)
         return text
+
+    def __split(self, text: str) -> list[str]:
+        result = []
+        word = ''
+        for c in text:
+            if c in (' ', '\n'):
+                if word != '':
+                    result.append(word)
+                if word == '‘hold':
+                    pass
+                word = ''
+            else:
+                word += c
+        if word != '':
+            result.append(word)
+        return result
 
     def get_all_words(self):
         """
@@ -34,9 +51,10 @@ class WordsFinder:
             # Для каждого файла считывайте единые строки, переводя их в нижний регистр (метод lower()).
             text = self.__read_file(file_name).lower()
             # Избавьтесь от пунктуации [',', '.', '=', '!', '?', ';', ':', ' - '] в строке. (тире обособлено пробелами, это не дефис в слове).
-            text_no_symbols = self.__remove_symbols(text, [',', '.', '=', '!', '?', ';', ':', ' - '])
+            text1 = self.__remove_symbols(text, ['!', ' - '], '')
+            text2 = self.__remove_symbols(text1, [',', '.', '=', '?', ';', ':'], ' ')     #'—',  '‘', '’' ???
             # Разбейте эту строку на элементы списка методом split(). (разбивается по умолчанию по пробелу)
-            words = text_no_symbols.split()
+            words = self.__split(text2)
             # В словарь all_words запишите полученные данные, ключ - название файла, значение - список из слов этого файла.
             all_words[file_name] = words
 
@@ -65,8 +83,8 @@ class WordsFinder:
         result = {}
         for file_name, words in self.get_all_words().items():
             # Логика методов find или count
-            position = words.index(word.lower())
-            result[file_name] = len(words[position])
+            #position = words.index(word.lower())
+            result[file_name] = words.count(word.lower())
 
         return result
 
@@ -84,11 +102,39 @@ def test1():
     """
 
 
-def test(test_folder: str, result_file, *test_files: str):
-    maindir = os.getcwd()
+def test2():
+    finder1 = WordsFinder('Mother Goose - Monday’s Child.txt',)
+    print(finder1.get_all_words())
+    print(finder1.find('Child'))
+    print(finder1.count('Child'))
 
-    if (test_folder):
-        os.chdir(test_folder)
+
+def test3():
+    finder1 = WordsFinder('Rudyard Kipling - If.txt', )
+    print(finder1.get_all_words())
+    print(finder1.find('if'))
+    print(finder1.count('if'))
+
+
+def test4():
+    finder1 = WordsFinder('Walt Whitman - O Captain! My Captain!.txt')
+    print(finder1.get_all_words())
+    print(finder1.find('captain'))
+    print(finder1.count('captain'))
+
+def test5():
+    finder1 = WordsFinder('Walt Whitman - O Captain! My Captain!.txt',
+                          'Rudyard Kipling - If.txt',
+                          'Mother Goose - Monday’s Child.txt')
+    print(finder1.get_all_words())
+    print(finder1.find('the'))
+    print(finder1.count('the'))
+
+
+def run_test(test_dir: str, test_fn):
+    main_dir = os.getcwd()
+    if (test_dir):
+        os.chdir(test_dir)
 
     class ListStream:
         def __init__(self):
@@ -97,40 +143,36 @@ def test(test_folder: str, result_file, *test_files: str):
         def write(self, s):
             self.data += s
 
+        def flush(self):
+            pass
+
     sys.stdout = x = ListStream()
-
-    # include
-
-    finder = WordsFinder(*test_files)
-    print(finder.get_all_words())  # Все слова
-    print(finder.find('TEXT'))  # 3 слово по счёту
-    print(finder.count('teXT'))  # 4 слова teXT в тексте всего
-
-    sys.stdout = sys.__stdout__
+    test_fn()
     result = x.data
+    sys.stdout = sys.__stdout__
 
-    with open(result_file, 'r', encoding='utf8') as f:
+    with open('result.txt', 'r', encoding='utf8') as f:
         correct_result = f.read()
 
-    with open('check_file.txt', 'w', encoding='utf8') as f:
+    with open('my_result.txt', 'w', encoding='utf8') as f:
         f.write(result)
 
     if result == correct_result:
         print(result)
     else:
-        print("fail\n", x.data, '\n', correct_result)
+        print(f"fail\ngot:\n{x.data}correct:\n{correct_result}")
         raise
 
-    os.chdir(maindir)
+    os.chdir(main_dir)
 
 
 if __name__ == '__main__':
-    test1()
-    test('', 'result.txt', 'test_file.txt')
-    # test('Mother Goose - Monday’s Child')
-    # test('Rudyard Kipling - If')
-    # test('Walt Whitman - O Captain! My Captain!')
-    # test('All')
+#    test1()
+     run_test('', test1)
+     run_test('Mother Goose - Monday’s Child', test2)
+     run_test('Rudyard Kipling - If', test3)
+     run_test('Walt Whitman - O Captain! My Captain!', test4)
+     run_test('All', test5)
 
 
 """
