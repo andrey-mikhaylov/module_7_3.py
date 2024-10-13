@@ -1,11 +1,90 @@
+class WordsFinder:
+    def __init__(self, *file_names: str):
+        """
+        записывает названия файлов в атрибут file_names в виде списка.
+        :param filenames: неограниченное количество названий файлов
+        """
+        self.file_names = file_names
+
+    def __read_file(self, file_name: str) -> str:
+        with open(file_name, 'r', encoding='utf8') as f:
+            text = f.read()
+        return text
+
+    def __remove_symbols(self, text: str, symbols: list[str]) -> str:
+        for symbol in symbols:
+            text.replace(symbol, ' ')
+        return text
+
+    def get_all_words(self):
+        """
+        подготовительный метод, который возвращает словарь названий файлов и слов, содержащиеся в этих файлах
+        :return: словарь следующего вида:
+                 {'file1.txt': ['word1', 'word2'], 'file2.txt': ['word3', 'word4'], 'file3.txt': ['word5', 'word6', 'word7']}
+        """
+
+        # Создайте пустой словарь all_words.
+        all_words = {}
+
+        # Переберите названия файлов и открывайте каждый из них, используя оператор with.
+        for file_name in self.file_names:
+            # Для каждого файла считывайте единые строки, переводя их в нижний регистр (метод lower()).
+            text = self.__read_file(file_name)
+            # Избавьтесь от пунктуации [',', '.', '=', '!', '?', ';', ':', ' - '] в строке. (тире обособлено пробелами, это не дефис в слове).
+            # Разбейте эту строку на элементы списка методом split(). (разбивается по умолчанию по пробелу)
+            words = self.__remove_symbols(text, (',', '.', '=', '!', '?', ';', ':', ' - ')).split()
+            # В словарь all_words запишите полученные данные, ключ - название файла, значение - список из слов этого файла.
+            all_words[file_name] = words
+
+        return all_words
+
+    def find(self, word: str) -> dict[str, int]:
+        """
+        :param word: искомое слово
+        :return: словарь, где ключ - название файла, значение - позиция первого такого слова в списке слов этого файла.
+        """
+        # В методах find и count пользуйтесь ранее написанным методом get_all_words для получения названия файла и списка его слов.
+        # Для удобного перебора одновременно ключа(названия) и значения(списка слов) можно воспользоваться методом словаря - item().
+        for name, words in self.get_all_words().items():
+            # Логика методов find или count
+            pass
+        pass
+
+    def count(self, word: str) -> dict[str, int]:
+        """
+        :param word: искомое слово
+        :return: словарь, где ключ - название файла, значение - количество слова word в списке слов этого файла.
+        """
+        for name, words in self.get_all_words().items():
+            # Логика методов find или count
+            pass
+        pass
 
 
-def test():
+def test1():
+    finder2 = WordsFinder('tests/test_file.txt')
+    print(finder2.get_all_words())  # Все слова
+    print(finder2.find('TEXT'))  # 3 слово по счёту
+    print(finder2.count('teXT'))  # 4 слова teXT в тексте всего
+    """
+    Вывод на консоль:
+    {'test_file.txt': ["it's", 'a', 'text', 'for', 'task', 'найти', 'везде', 'используйте', 'его', 'для', 'самопроверки', 'успехов', 'в', 'решении', 'задачи', 'text', 'text', 'text']}
+    {'test_file.txt': 3}
+    {'test_file.txt': 4}
+    """
+
+
+def test(folder: str):
     pass
 
 
 if __name__ == '__main__':
-    test()
+    test1()
+    test('tests')
+    test('tests/Mother Goose - Monday’s Child')
+    test('tests/Rudyard Kipling - If')
+    test('tests/Walt Whitman - O Captain! My Captain!')
+    test('All')
 
 
 """
